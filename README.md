@@ -1,4 +1,4 @@
-## Online Food Delivery Application
+## Django Food Delivery Application
 
 ### Project Overview
 
