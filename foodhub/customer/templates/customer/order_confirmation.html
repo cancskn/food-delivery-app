@@ -1,0 +1,127 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+
+<style>
+iframe[src*="paypal"] {
+    z-index: 999999 !important;
+    position: relative !important;
+}
+</style>
+
+<div class="container mb-5">
+    <div class="row justify-content-center mt-1">
+        <div class="col-md-5 col-sm-12 p-4 text-center">
+            <h1>Order Submitted!</h1>
+            <p>You should receive a confirmation email soon.</p>
+            <a href="{% url 'index' %}">Go to the homepage</a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5 col-sm-12 text-center">
+            <h3 class="pb-3">Order Summary:</h3>
+            {% for item in items.all %}
+                <p>{{ item.name }} <span class="ps-3">{{ item.price }} PLN</span></p>
+            {% endfor %}
+
+            <p class="fw-bold pt-4">Total: {{ price }} PLN</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center pt-5 pb-2">
+        <div class="col-md-6 text-center">
+            <h3 class="pb-3">Pay Now or Pay with Cash at Delivery</h3>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div id="paypal-button-container"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.paypal.com/sdk/js?client-id=AVHkFBUP7dfYwB1z9h_S_cZgCsH_mapQo4bmQSk-yZT56IpnV1IqhbOiE5eDOJjT-GNDK8klNy4C7l4D&currency=PLN"></script>
+
+<script>
+    // Remove modal backdrop if present
+    document.addEventListener("DOMContentLoaded", function() {
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = 'auto';
+        document.body.style.paddingRight = '0';
+        
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(b => b.remove());
+    });
+
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+    // Initialize PayPal Buttons
+    paypal.Buttons({
+        
+        style: {
+            shape: 'pill',
+            color: 'gold',
+            layout: 'vertical',
+            label: 'paypal'
+        },
+
+        // Sets up the transaction when a payment button is clicked
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        currency_code: 'PLN',
+                        value: '{{ price|safe }}' // Total price from Django context
+                    }
+                }]
+            });
+        },
+
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(orderData) {
+                
+                // Django'ya gönderilecek veri
+                const paymentData = {
+                    'isPaid': true,           // Tutorial sahibinin eklediği kısım
+                    'orderID': data.orderID   // PayPal işlem numarası
+                };
+
+                // Arka planda veritabanı kaydı için POST isteği
+                return fetch("{% url 'order-confirmation' pk %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken, // getCookie ile aldığın token
+                    },
+                    body: JSON.stringify(paymentData)
+                }).then(function(response) {
+                    // Kayıt başarılıysa, kullanıcıyı nihai ödeme onay sayfasına yönlendir
+                    window.location.href = "{% url 'order-pay-confirmation' %}";
+                });
+            });
+        },
+
+        onError: function(err) {
+            console.error('PayPal Error:', err);
+            // Check console for errors
+        }
+    }).render('#paypal-button-container'); 
+</script>
+{% endblock content %}

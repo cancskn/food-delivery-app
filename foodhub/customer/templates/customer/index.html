@@ -1,0 +1,22 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+<div class="container mb-5">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 col-sm-12 text-center">
+            <h1 class="display-4 fw-bold">Online Food Delivery Service</h1>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6 col-lg-5"> <div class="card shadow-3-strong p-4 text-center"> <div class="card-body">
+                    <h2 class="card-title h4 mb-4">Place an Order</h2>
+                    <a href="{% url 'order' %}" class="btn btn-primary btn-lg btn-rounded">
+                        Order Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
