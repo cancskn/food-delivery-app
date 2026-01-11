@@ -1,11 +1,11 @@
-# FoodHub – Online Food Delivery Application
+## Online Food Delivery Application
 
-## Project Overview
+### Project Overview
 
 FoodHub is an online food delivery platform where customers can place instant orders,  
 and authorized staff can manage the entire business operations via a simple dashboard.
 
-## Key Features
+### Key Features
 
 - **Fast Ordering**  
   Customers can browse menus and place orders without the barrier of a signup process.
@@ -22,21 +22,21 @@ and authorized staff can manage the entire business operations via a simple dash
 - **Restaurant Management**  
   Full control over the restaurant's offerings and the ability for staff to track and update order statuses (e.g., marking orders as shipped) once they are ready for delivery.
 
-## Technology Stack
+### Technology Stack
 
-### Backend
+#### Backend
 - **Framework:** Django (Python-based web framework)
 - **Authentication & User Management:** Django-Allauth  
 - **Form Rendering:** Django Crispy Forms
 
-### Frontend
+#### Frontend
 - **Customer Side:** Bootstrap 5  
 - **Restaurant Side:** MDBootstrap 5 + Django Crispy Forms  
 - **Technologies:** HTML5, CSS3, JavaScript
 
-### Payment Gateway
+#### Payment Gateway
 - **PayPal REST API Integration** via JavaScript SDK for secure checkout and payment processing
 
-### Database
+#### Database
 - **SQLite** (Relational database used for development and local data storage)
 
